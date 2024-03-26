@@ -25,12 +25,19 @@ void PosixSemaphore::Post()
 
 void PosixSemaphore::Wait()
 {
-    ENSURE(sem_wait(m_semaphore));
+    int result;
+    while ((result = sem_wait(m_semaphore)) == -1 && errno == EINTR)
+        continue; // Ignore if interrupted by signal handling.
+
+    ENSURE(result);
 }
 
 bool PosixSemaphore::TryWait()
 {
-    int result = sem_trywait(m_semaphore);
+    int result;
+    while ((result = sem_trywait(m_semaphore)) == -1 && errno == EINTR)
+        continue; // Ignore if interrupted by signal handling.
+
     if (result == 0)
     {
         return true;
@@ -57,7 +64,11 @@ bool PosixSemaphore::TimedWait(long msecs)
     add = msecs / (1000 * 1000 * 1000);
     ts.tv_sec += (add + secs);
     ts.tv_nsec = msecs % (1000 * 1000 * 1000);
-    int result = sem_timedwait(m_semaphore, &ts);
+
+    int result;
+    while ((result = sem_timedwait(m_semaphore, &ts)) == -1 && errno == EINTR)
+        continue; // Ignore if interrupted by signal handling.
+
     if (result == 0)
     {
         return true;
