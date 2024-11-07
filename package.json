@@ -26,14 +26,13 @@
     "@types/node": "^14.14.6"
   },
   "scripts": {
-    "install": "cmake-js compile && pnpm run build",
-    "build": "tsc -p ./src",
-    "build:watch": "tsc -w -p ./src",
-    "prepublishOnly": "yarn build"
+    "install": "cmake-js compile && tsc -p ./src",
+    "build": "tsc -p ./src"
   },
   "files": [
     "CMakeLists.txt",
     "/native",
-    "/lib"
+    "/lib",
+    "/src"
   ]
 }
